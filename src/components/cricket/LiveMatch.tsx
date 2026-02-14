@@ -1,0 +1,192 @@
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Check } from 'lucide-react';
+import type { MatchState } from '@/types/cricket';
+
+interface Props {
+  state: MatchState;
+  onScore: (type: 'dot' | '1' | '2' | '3' | '4' | '6' | 'wide' | 'noball' | 'wicket') => void;
+  onNewBatsman: (playerIndex: number) => void;
+}
+
+export default function LiveMatch({ state, onScore, onNewBatsman }: Props) {
+  const inn = state.innings[state.currentInnings]!;
+  const battingTeam = state.teams[inn.battingTeamIndex];
+  const bowlingTeam = state.teams[1 - inn.battingTeamIndex];
+  const striker = inn.batsmen[inn.strikerIdx];
+  const nonStriker = inn.batsmen[inn.nonStrikerIdx];
+  const bowler = inn.bowlers[inn.currentBowlerIdx];
+  const oversStr = `${Math.floor(inn.totalBalls / 6)}.${inn.totalBalls % 6}`;
+  const rr = inn.totalBalls > 0 ? ((inn.score / inn.totalBalls) * 6).toFixed(2) : '0.00';
+
+  const [flashClass, setFlashClass] = useState('');
+  const [selectedBatsman, setSelectedBatsman] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (flashClass) {
+      const t = setTimeout(() => setFlashClass(''), 600);
+      return () => clearTimeout(t);
+    }
+  }, [flashClass]);
+
+  const handleScore = (type: Parameters<typeof onScore>[0]) => {
+    if (type === '4' || type === '6') setFlashClass('boundary-flash');
+    else if (type === 'wicket') setFlashClass('wicket-flash');
+    onScore(type);
+  };
+
+  const usedBatIndices = inn.batsmen.map(b => b.playerIndex);
+  const availableBatsmen = battingTeam.players
+    .map((name, i) => ({ name, i }))
+    .filter(p => !usedBatIndices.includes(p.i));
+
+  const confirmNewBatsman = () => {
+    if (selectedBatsman !== null) {
+      onNewBatsman(selectedBatsman);
+      setSelectedBatsman(null);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col max-w-lg mx-auto">
+      {/* Scoreboard */}
+      <div className={`bg-card p-4 rounded-b-2xl ${flashClass}`}>
+        <div className="flex items-baseline justify-between mb-1">
+          <h2 className="text-lg font-black text-primary">{battingTeam.name}</h2>
+          <span className="text-xs text-muted-foreground">
+            {state.currentInnings === 0 ? '1st Innings' : '2nd Innings'}
+          </span>
+        </div>
+        <div className="flex items-baseline gap-3">
+          <span className="text-4xl font-black text-foreground score-highlight">
+            {inn.score}/{inn.wickets}
+          </span>
+          <span className="text-lg text-muted-foreground">({oversStr})</span>
+        </div>
+        <div className="flex gap-4 text-sm text-muted-foreground mt-1">
+          <span>RR: {rr}</span>
+          {state.currentInnings === 1 && state.target && (
+            <span className="text-primary font-semibold">
+              Need {state.target - inn.score} from {state.oversPerInnings * 6 - inn.totalBalls} balls
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Batsmen */}
+      <div className="px-4 mt-3 space-y-1">
+        {[striker, nonStriker].map((bat, i) => (
+          <div key={bat.playerIndex} className="flex items-center justify-between bg-card rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2">
+              {i === 0 && <span className="text-primary text-xs font-bold">*</span>}
+              <span className="font-semibold text-foreground text-sm">{bat.name}</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <span className="font-bold text-foreground">{bat.runs}</span>
+              <span className="text-muted-foreground">({bat.balls})</span>
+              <span className="text-xs text-muted-foreground">{bat.fours}×4 {bat.sixes}×6</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Bowler */}
+      <div className="px-4 mt-2">
+        <div className="flex items-center justify-between bg-card rounded-lg px-3 py-2">
+          <span className="font-semibold text-foreground text-sm">{bowler.name}</span>
+          <span className="text-sm text-muted-foreground">
+            {bowler.oversBowled}.{bowler.ballsBowled}-{bowler.maidens}-{bowler.runsConceded}-{bowler.wickets}
+          </span>
+        </div>
+      </div>
+
+      {/* This Over */}
+      <div className="px-4 mt-3">
+        <div className="bg-card rounded-lg px-3 py-2">
+          <p className="text-xs text-muted-foreground mb-1.5">This Over</p>
+          <div className="flex gap-1.5 flex-wrap">
+            {inn.currentOver.map((b, i) => (
+              <span
+                key={i}
+                className={`w-8 h-8 flex items-center justify-center rounded-full text-xs font-bold ${
+                  b.isWicket ? 'bg-destructive text-destructive-foreground'
+                  : b.runs >= 4 ? 'bg-boundary text-boundary-foreground'
+                  : b.isWide || b.isNoBall ? 'bg-extras-color text-extras-foreground'
+                  : b.runs === 0 ? 'bg-muted text-muted-foreground'
+                  : 'bg-secondary text-secondary-foreground'
+                }`}
+              >
+                {b.label}
+              </span>
+            ))}
+            {inn.currentOver.length === 0 && <span className="text-muted-foreground text-xs">New over</span>}
+          </div>
+        </div>
+      </div>
+
+      {/* Scoring Buttons */}
+      <div className="flex-1" />
+      <div className="px-4 pb-6 pt-4 space-y-2">
+        <div className="grid grid-cols-4 gap-2">
+          {(['dot', '1', '2', '3'] as const).map(type => (
+            <Button
+              key={type}
+              onClick={() => handleScore(type)}
+              className={`h-14 text-lg font-bold ${
+                type === 'dot' ? 'bg-muted text-muted-foreground hover:bg-muted/80' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              }`}
+            >
+              {type === 'dot' ? '0' : type}
+            </Button>
+          ))}
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <Button onClick={() => handleScore('4')} className="h-14 text-lg font-bold bg-boundary text-boundary-foreground hover:bg-boundary/80">
+            FOUR
+          </Button>
+          <Button onClick={() => handleScore('6')} className="h-14 text-lg font-bold bg-boundary text-boundary-foreground hover:bg-boundary/80">
+            SIX
+          </Button>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <Button onClick={() => handleScore('wide')} className="h-12 font-bold bg-extras-color text-extras-foreground hover:bg-extras-color/80">
+            Wide
+          </Button>
+          <Button onClick={() => handleScore('noball')} className="h-12 font-bold bg-extras-color text-extras-foreground hover:bg-extras-color/80">
+            No Ball
+          </Button>
+          <Button onClick={() => handleScore('wicket')} className="h-12 font-bold bg-destructive text-destructive-foreground hover:bg-destructive/80">
+            WICKET
+          </Button>
+        </div>
+      </div>
+
+      {/* New Batsman Dialog */}
+      <Dialog open={inn.needsNewBatsman} onOpenChange={() => {}}>
+        <DialogContent className="bg-card border-border max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Select New Batsman</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 mt-2">
+            {availableBatsmen.map(p => (
+              <button
+                key={p.i}
+                onClick={() => setSelectedBatsman(p.i)}
+                className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${
+                  selectedBatsman === p.i ? 'bg-primary/20 border-2 border-primary' : 'bg-secondary border-2 border-transparent'
+                }`}
+              >
+                <span className="font-semibold text-foreground">{p.name}</span>
+                {selectedBatsman === p.i && <Check className="h-4 w-4 text-primary" />}
+              </button>
+            ))}
+          </div>
+          <Button onClick={confirmNewBatsman} disabled={selectedBatsman === null} className="mt-2 bg-primary text-primary-foreground">
+            Confirm
+          </Button>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
