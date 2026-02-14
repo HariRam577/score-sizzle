@@ -8,7 +8,7 @@ interface Props {
   onSubmit: (team1: TeamInfo, team2: TeamInfo, overs: number) => void;
 }
 
-const OVER_OPTIONS = [5, 6, 7, 8, 8, 10, 20, 50];
+const OVER_OPTIONS = [5, 6, 7, 8, 9, 10, 20, 50];
 
 export default function TeamSetup({ onSubmit }: Props) {
   const [team1Name, setTeam1Name] = useState("");
