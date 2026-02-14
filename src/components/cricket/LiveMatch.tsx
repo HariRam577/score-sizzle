@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -17,32 +16,16 @@ interface Props {
     type: "dot" | "1" | "2" | "3" | "4" | "6" | "wide" | "noball" | "wicket",
     howOut?: string,
   ) => void;
-=======
-import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Check } from 'lucide-react';
-import type { MatchState, ScoringAction } from '@/types/cricket';
-import ScoringButtons from './ScoringButtons';
-
-interface Props {
-  state: MatchState;
-  onScore: (type: 'dot' | '1' | '2' | '3' | '4' | '6' | 'wide' | 'noball' | 'wicket', howOut?: string) => void;
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
   onNewBatsman: (playerIndex: number) => void;
   onFinishMatch?: () => void;
 }
 
-<<<<<<< HEAD
 export default function LiveMatch({
   state,
   onScore,
   onNewBatsman,
   onFinishMatch,
 }: Props) {
-=======
-export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch }: Props) {
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
   const inn = state.innings[state.currentInnings]!;
   const battingTeam = state.teams[inn.battingTeamIndex];
   const bowlingTeam = state.teams[1 - inn.battingTeamIndex];
@@ -50,7 +33,6 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
   const nonStriker = inn.batsmen[inn.nonStrikerIdx];
   const bowler = inn.bowlers[inn.currentBowlerIdx];
   const oversStr = `${Math.floor(inn.totalBalls / 6)}.${inn.totalBalls % 6}`;
-<<<<<<< HEAD
   const rr =
     inn.totalBalls > 0 ? ((inn.score / inn.totalBalls) * 6).toFixed(2) : "0.00";
 
@@ -62,23 +44,12 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
   useEffect(() => {
     if (flashClass) {
       const t = setTimeout(() => setFlashClass(""), 600);
-=======
-  const rr = inn.totalBalls > 0 ? ((inn.score / inn.totalBalls) * 6).toFixed(2) : '0.00';
-
-  const [flashClass, setFlashClass] = useState('');
-  const [selectedBatsman, setSelectedBatsman] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (flashClass) {
-      const t = setTimeout(() => setFlashClass(''), 600);
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
       return () => clearTimeout(t);
     }
   }, [flashClass]);
 
   const handleScoringAction = (action: ScoringAction) => {
     switch (action.type) {
-<<<<<<< HEAD
       case "DOT":
         onScore("dot");
         break;
@@ -130,24 +101,6 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
   const availableBatsmen = battingTeam.players
     .map((name, i) => ({ name, i }))
     .filter((p) => !usedBatIndices.includes(p.i));
-=======
-      case 'DOT': onScore('dot'); break;
-      case 'RUNS': onScore(String(action.runs) as '1' | '2' | '3'); break;
-      case 'FOUR': setFlashClass('boundary-flash'); onScore('4'); break;
-      case 'SIX': setFlashClass('boundary-flash'); onScore('6'); break;
-      case 'WIDE': onScore('wide'); break;
-      case 'NOBALL': onScore('noball'); break;
-      case 'BYE': onScore(String(action.runs) as '1' | '2' | '3'); break;
-      case 'LEGBYE': onScore(String(action.runs) as '1' | '2' | '3'); break;
-      case 'WICKET': setFlashClass('wicket-flash'); onScore('wicket', action.howOut); break;
-    }
-  };
-
-  const usedBatIndices = inn.batsmen.map(b => b.playerIndex);
-  const availableBatsmen = battingTeam.players
-    .map((name, i) => ({ name, i }))
-    .filter(p => !usedBatIndices.includes(p.i));
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
 
   const confirmNewBatsman = () => {
     if (selectedBatsman !== null) {
@@ -161,17 +114,11 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
       {/* Scoreboard */}
       <div className={`bg-card p-4 rounded-b-2xl ${flashClass}`}>
         <div className="flex items-baseline justify-between mb-1">
-<<<<<<< HEAD
           <h2 className="text-lg font-black text-primary">
             {battingTeam.name}
           </h2>
           <span className="text-xs text-muted-foreground">
             {state.currentInnings === 0 ? "1st Innings" : "2nd Innings"}
-=======
-          <h2 className="text-lg font-black text-primary">{battingTeam.name}</h2>
-          <span className="text-xs text-muted-foreground">
-            {state.currentInnings === 0 ? '1st Innings' : '2nd Innings'}
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
           </span>
         </div>
         <div className="flex items-baseline gap-3">
@@ -184,12 +131,8 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
           <span>RR: {rr}</span>
           {state.currentInnings === 1 && state.target && (
             <span className="text-primary font-semibold">
-<<<<<<< HEAD
               Need {state.target - inn.score} from{" "}
               {state.oversPerInnings * 6 - inn.totalBalls} balls
-=======
-              Need {state.target - inn.score} from {state.oversPerInnings * 6 - inn.totalBalls} balls
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
             </span>
           )}
         </div>
@@ -198,7 +141,6 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
       {/* Batsmen */}
       <div className="px-4 mt-3 space-y-1">
         {[striker, nonStriker].map((bat, i) => (
-<<<<<<< HEAD
           <div
             key={bat.playerIndex}
             className="flex items-center justify-between bg-card rounded-lg px-3 py-2"
@@ -210,23 +152,13 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
               <span className="font-semibold text-foreground text-sm">
                 {bat.name}
               </span>
-=======
-          <div key={bat.playerIndex} className="flex items-center justify-between bg-card rounded-lg px-3 py-2">
-            <div className="flex items-center gap-2">
-              {i === 0 && <span className="text-primary text-xs font-bold">*</span>}
-              <span className="font-semibold text-foreground text-sm">{bat.name}</span>
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
             </div>
             <div className="flex items-center gap-3 text-sm">
               <span className="font-bold text-foreground">{bat.runs}</span>
               <span className="text-muted-foreground">({bat.balls})</span>
-<<<<<<< HEAD
               <span className="text-xs text-muted-foreground">
                 {bat.fours}×4 {bat.sixes}×6
               </span>
-=======
-              <span className="text-xs text-muted-foreground">{bat.fours}×4 {bat.sixes}×6</span>
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
             </div>
           </div>
         ))}
@@ -235,18 +167,12 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
       {/* Bowler */}
       <div className="px-4 mt-2">
         <div className="flex items-center justify-between bg-card rounded-lg px-3 py-2">
-<<<<<<< HEAD
           <span className="font-semibold text-foreground text-sm">
             {bowler.name}
           </span>
           <span className="text-sm text-muted-foreground">
             {bowler.oversBowled}.{bowler.ballsBowled}-{bowler.maidens}-
             {bowler.runsConceded}-{bowler.wickets}
-=======
-          <span className="font-semibold text-foreground text-sm">{bowler.name}</span>
-          <span className="text-sm text-muted-foreground">
-            {bowler.oversBowled}.{bowler.ballsBowled}-{bowler.maidens}-{bowler.runsConceded}-{bowler.wickets}
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
           </span>
         </div>
       </div>
@@ -260,7 +186,6 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
               <span
                 key={i}
                 className={`w-8 h-8 flex items-center justify-center rounded-full text-xs font-bold ${
-<<<<<<< HEAD
                   b.isWicket
                     ? "bg-destructive text-destructive-foreground"
                     : b.runs >= 4
@@ -270,32 +195,20 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
                         : b.runs === 0
                           ? "bg-muted text-muted-foreground"
                           : "bg-secondary text-secondary-foreground"
-=======
-                  b.isWicket ? 'bg-destructive text-destructive-foreground'
-                  : b.runs >= 4 ? 'bg-boundary text-boundary-foreground'
-                  : b.isWide || b.isNoBall ? 'bg-extras-color text-extras-foreground'
-                  : b.runs === 0 ? 'bg-muted text-muted-foreground'
-                  : 'bg-secondary text-secondary-foreground'
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
                 }`}
               >
                 {b.label}
               </span>
             ))}
-<<<<<<< HEAD
             {inn.currentOver.length === 0 && (
               <span className="text-muted-foreground text-xs">New over</span>
             )}
-=======
-            {inn.currentOver.length === 0 && <span className="text-muted-foreground text-xs">New over</span>}
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
           </div>
         </div>
       </div>
 
       {/* Scoring Buttons */}
       <div className="flex-1" />
-<<<<<<< HEAD
       <ScoringButtons
         onScore={handleScoringAction}
         onFinishMatch={onFinishMatch || (() => {})}
@@ -344,32 +257,21 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
           </Button>
         </DialogContent>
       </Dialog>
-=======
-      <ScoringButtons onScore={handleScoringAction} onFinishMatch={onFinishMatch || (() => {})} />
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
 
       {/* New Batsman Dialog */}
       <Dialog open={inn.needsNewBatsman} onOpenChange={() => {}}>
         <DialogContent className="bg-card border-border max-w-sm">
           <DialogHeader>
-<<<<<<< HEAD
             <DialogTitle className="text-foreground">
               Select New Batsman
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-2 mt-2">
             {availableBatsmen.map((p) => (
-=======
-            <DialogTitle className="text-foreground">Select New Batsman</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2 mt-2">
-            {availableBatsmen.map(p => (
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
               <button
                 key={p.i}
                 onClick={() => setSelectedBatsman(p.i)}
                 className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${
-<<<<<<< HEAD
                   selectedBatsman === p.i
                     ? "bg-primary/20 border-2 border-primary"
                     : "bg-secondary border-2 border-transparent"
@@ -387,17 +289,6 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
             disabled={selectedBatsman === null}
             className="mt-2 bg-primary text-primary-foreground"
           >
-=======
-                  selectedBatsman === p.i ? 'bg-primary/20 border-2 border-primary' : 'bg-secondary border-2 border-transparent'
-                }`}
-              >
-                <span className="font-semibold text-foreground">{p.name}</span>
-                {selectedBatsman === p.i && <Check className="h-4 w-4 text-primary" />}
-              </button>
-            ))}
-          </div>
-          <Button onClick={confirmNewBatsman} disabled={selectedBatsman === null} className="mt-2 bg-primary text-primary-foreground">
->>>>>>> 7ca1dbf8850d48f8d3a55f0f733f90c6d08085a3
             Confirm
           </Button>
         </DialogContent>
