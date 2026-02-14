@@ -7,7 +7,7 @@ import ScoringButtons from './ScoringButtons';
 
 interface Props {
   state: MatchState;
-  onScore: (type: 'dot' | '1' | '2' | '3' | '4' | '6' | 'wide' | 'noball' | 'wicket') => void;
+  onScore: (type: 'dot' | '1' | '2' | '3' | '4' | '6' | 'wide' | 'noball' | 'wicket', howOut?: string) => void;
   onNewBatsman: (playerIndex: number) => void;
   onFinishMatch?: () => void;
 }
@@ -42,7 +42,7 @@ export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch 
       case 'NOBALL': onScore('noball'); break;
       case 'BYE': onScore(String(action.runs) as '1' | '2' | '3'); break;
       case 'LEGBYE': onScore(String(action.runs) as '1' | '2' | '3'); break;
-      case 'WICKET': setFlashClass('wicket-flash'); onScore('wicket'); break;
+      case 'WICKET': setFlashClass('wicket-flash'); onScore('wicket', action.howOut); break;
     }
   };
 
