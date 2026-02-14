@@ -16,6 +16,8 @@ export interface BatsmanStats {
   fours: number;
   sixes: number;
   isOut: boolean;
+  howOut?: string;
+  bowlerName?: string;
 }
 
 export interface BowlerStats {

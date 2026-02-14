@@ -73,7 +73,7 @@ export function useMatch() {
     });
   }, []);
 
-  const scoreBall = useCallback((type: 'dot' | '1' | '2' | '3' | '4' | '6' | 'wide' | 'noball' | 'wicket') => {
+  const scoreBall = useCallback((type: 'dot' | '1' | '2' | '3' | '4' | '6' | 'wide' | 'noball' | 'wicket', howOut?: string) => {
     if (type === '4' || type === '6') playCelebrationSound();
 
     setState(s => {
@@ -132,6 +132,8 @@ export function useMatch() {
 
       if (isWicket) {
         striker.isOut = true;
+        striker.howOut = howOut || 'Bowled';
+        striker.bowlerName = bowler.name;
         inn.wickets += 1;
         const totalPlayers = s.teams[inn.battingTeamIndex].players.length;
         if (inn.wickets >= totalPlayers - 1) {
