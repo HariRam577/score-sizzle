@@ -58,6 +58,17 @@ export type MatchPhase =
   | 'innings-break'
   | 'result';
 
+export type ScoringAction =
+  | { type: 'DOT' }
+  | { type: 'RUNS'; runs: number }
+  | { type: 'FOUR' }
+  | { type: 'SIX' }
+  | { type: 'WIDE'; runs: number }
+  | { type: 'NOBALL'; runs: number }
+  | { type: 'BYE'; runs: number }
+  | { type: 'LEGBYE'; runs: number }
+  | { type: 'WICKET'; howOut: string };
+
 export interface MatchState {
   phase: MatchPhase;
   teams: [TeamInfo, TeamInfo];
