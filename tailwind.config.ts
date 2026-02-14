@@ -47,6 +47,11 @@ export default {
           DEFAULT: "hsl(var(--extras-color))",
           foreground: "hsl(var(--extras-foreground))",
         },
+        dot: "hsl(var(--dot))",
+        "boundary-four": "hsl(var(--boundary-four))",
+        "boundary-six": "hsl(var(--boundary-six))",
+        extra: "hsl(var(--extra))",
+        wicket: "hsl(var(--wicket))",
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",

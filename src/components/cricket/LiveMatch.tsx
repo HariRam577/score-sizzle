@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
-import type { MatchState } from '@/types/cricket';
+import type { MatchState, ScoringAction } from '@/types/cricket';
+import ScoringButtons from './ScoringButtons';
 
 interface Props {
   state: MatchState;
   onScore: (type: 'dot' | '1' | '2' | '3' | '4' | '6' | 'wide' | 'noball' | 'wicket') => void;
   onNewBatsman: (playerIndex: number) => void;
+  onFinishMatch?: () => void;
 }
 
-export default function LiveMatch({ state, onScore, onNewBatsman }: Props) {
+export default function LiveMatch({ state, onScore, onNewBatsman, onFinishMatch }: Props) {
   const inn = state.innings[state.currentInnings]!;
   const battingTeam = state.teams[inn.battingTeamIndex];
   const bowlingTeam = state.teams[1 - inn.battingTeamIndex];
@@ -30,10 +32,18 @@ export default function LiveMatch({ state, onScore, onNewBatsman }: Props) {
     }
   }, [flashClass]);
 
-  const handleScore = (type: Parameters<typeof onScore>[0]) => {
-    if (type === '4' || type === '6') setFlashClass('boundary-flash');
-    else if (type === 'wicket') setFlashClass('wicket-flash');
-    onScore(type);
+  const handleScoringAction = (action: ScoringAction) => {
+    switch (action.type) {
+      case 'DOT': onScore('dot'); break;
+      case 'RUNS': onScore(String(action.runs) as '1' | '2' | '3'); break;
+      case 'FOUR': setFlashClass('boundary-flash'); onScore('4'); break;
+      case 'SIX': setFlashClass('boundary-flash'); onScore('6'); break;
+      case 'WIDE': onScore('wide'); break;
+      case 'NOBALL': onScore('noball'); break;
+      case 'BYE': onScore(String(action.runs) as '1' | '2' | '3'); break;
+      case 'LEGBYE': onScore(String(action.runs) as '1' | '2' | '3'); break;
+      case 'WICKET': setFlashClass('wicket-flash'); onScore('wicket'); break;
+    }
   };
 
   const usedBatIndices = inn.batsmen.map(b => b.playerIndex);
@@ -127,40 +137,7 @@ export default function LiveMatch({ state, onScore, onNewBatsman }: Props) {
 
       {/* Scoring Buttons */}
       <div className="flex-1" />
-      <div className="px-4 pb-6 pt-4 space-y-2">
-        <div className="grid grid-cols-4 gap-2">
-          {(['dot', '1', '2', '3'] as const).map(type => (
-            <Button
-              key={type}
-              onClick={() => handleScore(type)}
-              className={`h-14 text-lg font-bold ${
-                type === 'dot' ? 'bg-muted text-muted-foreground hover:bg-muted/80' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-              }`}
-            >
-              {type === 'dot' ? '0' : type}
-            </Button>
-          ))}
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <Button onClick={() => handleScore('4')} className="h-14 text-lg font-bold bg-boundary text-boundary-foreground hover:bg-boundary/80">
-            FOUR
-          </Button>
-          <Button onClick={() => handleScore('6')} className="h-14 text-lg font-bold bg-boundary text-boundary-foreground hover:bg-boundary/80">
-            SIX
-          </Button>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          <Button onClick={() => handleScore('wide')} className="h-12 font-bold bg-extras-color text-extras-foreground hover:bg-extras-color/80">
-            Wide
-          </Button>
-          <Button onClick={() => handleScore('noball')} className="h-12 font-bold bg-extras-color text-extras-foreground hover:bg-extras-color/80">
-            No Ball
-          </Button>
-          <Button onClick={() => handleScore('wicket')} className="h-12 font-bold bg-destructive text-destructive-foreground hover:bg-destructive/80">
-            WICKET
-          </Button>
-        </div>
-      </div>
+      <ScoringButtons onScore={handleScoringAction} onFinishMatch={onFinishMatch || (() => {})} />
 
       {/* New Batsman Dialog */}
       <Dialog open={inn.needsNewBatsman} onOpenChange={() => {}}>
