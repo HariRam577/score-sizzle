@@ -39,6 +39,14 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        boundary: {
+          DEFAULT: "hsl(var(--boundary))",
+          foreground: "hsl(var(--boundary-foreground))",
+        },
+        "extras-color": {
+          DEFAULT: "hsl(var(--extras-color))",
+          foreground: "hsl(var(--extras-foreground))",
+        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
